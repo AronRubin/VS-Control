@@ -1,7 +1,6 @@
 dist/
 docs/
 extension/lib/
-extension/README.md
 extension/LICENSE
 extension/CHANGELOG.md
 extension/CONTRIBUTING.md

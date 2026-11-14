@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.0.1 — Unreleased
+## 0.0.1 — 2026-11-14
 
 - Connect Claude Code to VS Code through a local authenticated MCP bridge.
 - Forward native browser and test tools, including screenshots and test failures.

@@ -68,7 +68,7 @@ vsix = OUT / f"vs-control-bridge-{version}.vsix"
 vsix_entries = {
     "extension.vsixmanifest": vsix_manifest.encode(),
     "[Content_Types].xml": content_types.encode(),
-    **{name: source_file(name) for name in ["extension/package.json", "extension/README.md", "extension/LICENSE", "extension/CHANGELOG.md", "extension/CONTRIBUTING.md", "extension/lib/state.cjs"]},
+    **{name: source_file(name) for name in ["extension/package.json", "extension/README.md", "extension/LICENSE", "extension/CHANGELOG.md", "extension/lib/state.cjs"]},
     **source_tree("extension/src", ".cjs"),
 }
 write_archive(vsix, vsix_entries)

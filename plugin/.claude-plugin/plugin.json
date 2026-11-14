@@ -2,7 +2,7 @@
   "name": "vs-control",
   "version": "0.0.1",
   "description": "Use VS Code's integrated browser, Test Explorer and editor tools from Claude Code and its VS Code extension.",
-  "author": { "name": "VS Control" },
+  "author": { "name": "Matthias Duve" },
   "homepage": "https://github.com/morzan1001/VS-Control#readme",
   "repository": "https://github.com/morzan1001/VS-Control",
   "license": "MIT"
