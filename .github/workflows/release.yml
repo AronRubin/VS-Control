@@ -1,0 +1,63 @@
+name: Draft release
+
+# Explicitly manual. Pushing a branch or tag does not create a release.
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Existing annotated tag to package (for example v0.0.1)
+        type: string
+        required: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ inputs.tag }}
+  cancel-in-progress: false
+
+jobs:
+  draft:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    env:
+      RELEASE_TAG: ${{ inputs.tag }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          ref: refs/tags/${{ inputs.tag }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
+        with:
+          node-version: '24'
+          package-manager-cache: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7
+        with:
+          python-version: '3.13'
+      - name: Require the matching annotated version tag
+        shell: bash
+        run: |
+          node -e 'const expected = "v" + require("./package.json").version; if (process.env.RELEASE_TAG !== expected) throw new Error("Tag must be " + expected);'
+          test "$(git cat-file -t "refs/tags/$RELEASE_TAG")" = tag
+          test "$(git rev-parse HEAD)" = "$(git rev-parse "$RELEASE_TAG^{commit}")"
+      - name: Validate, test, build, and verify packages
+        run: npm run verify
+      - name: Extract this version's notes from the changelog
+        run: node scripts/release-notes.cjs
+      - name: Create a draft with portable artifacts
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          release_version="${RELEASE_TAG#v}"
+          gh release create "$RELEASE_TAG" \
+            "dist/vs-control-bridge-$release_version.vsix" \
+            "dist/vs-control-plugin-$release_version.zip" \
+            "dist/SHA256SUMS-$release_version.txt" \
+            --repo "$GITHUB_REPOSITORY" \
+            --verify-tag --draft \
+            --title "VS Control $RELEASE_TAG" \
+            --notes-file "dist/release-notes-$release_version.md"

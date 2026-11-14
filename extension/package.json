@@ -1,0 +1,34 @@
+{
+  "name": "vs-control-bridge",
+  "displayName": "VS Control — Claude Code Bridge",
+  "description": "Expose native VS Code browser, testing and editor tools to the VS Control Claude Code plugin.",
+  "version": "0.0.1",
+  "publisher": "vs-control",
+  "repository": { "type": "git", "url": "https://github.com/morzan1001/VS-Control.git", "directory": "extension" },
+  "homepage": "https://github.com/morzan1001/VS-Control#readme",
+  "bugs": { "url": "https://github.com/morzan1001/VS-Control/issues" },
+  "license": "MIT",
+  "engines": { "vscode": "^1.109.0" },
+  "categories": ["Other", "Testing"],
+  "main": "./src/extension.cjs",
+  "extensionKind": ["workspace"],
+  "activationEvents": ["onStartupFinished"],
+  "capabilities": { "untrustedWorkspaces": { "supported": false }, "virtualWorkspaces": { "supported": false } },
+  "contributes": {
+    "commands": [
+      { "command": "vsControl.status", "title": "VS Control: Show Connection and Tools" },
+      { "command": "vsControl.restart", "title": "VS Control: Restart Bridge" },
+      { "command": "vsControl.stop", "title": "VS Control: Stop Bridge" }
+    ],
+    "configuration": {
+      "title": "VS Control",
+      "properties": {
+        "vsControl.enabled": { "type": "boolean", "default": true, "scope": "machine", "description": "Start the local Claude Code bridge in trusted workspaces." },
+        "vsControl.nativeToolGroups": { "type": "array", "items": { "type": "string", "enum": ["browser", "testing", "terminal", "notebook", "code"] }, "default": ["browser", "testing"], "scope": "machine", "description": "Groups of native VS Code tools exposed to Claude. Requires the tools to be available in vscode.lm.tools." },
+        "vsControl.additionalToolNames": { "type": "array", "items": { "type": "string" }, "default": [], "scope": "machine", "description": "Exact additional vscode.lm tool IDs to expose. Inspect them with vscode_tools first. MCP tools are excluded to prevent recursive bridges." },
+        "vsControl.additionalCommands": { "type": "array", "items": { "type": "string" }, "default": [], "scope": "machine", "description": "Additional command IDs callable through vscode_command. These commands may perform arbitrary actions." },
+        "vsControl.toolTimeoutSeconds": { "type": "integer", "minimum": 5, "maximum": 600, "default": 120, "scope": "machine", "description": "Deadline for tool calls, including time spent waiting for native VS Code confirmations." }
+      }
+    }
+  }
+}

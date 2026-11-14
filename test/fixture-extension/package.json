@@ -1,0 +1,15 @@
+{
+  "name": "integration-fixture",
+  "publisher": "vs-control",
+  "version": "0.0.1",
+  "engines": { "vscode": "^1.109.0" },
+  "main": "./extension.cjs",
+  "activationEvents": ["onStartupFinished"],
+  "contributes": {
+    "languageModelTools": [
+      { "name": "vscontrol_fixture_echo", "displayName": "VS Control test echo", "modelDescription": "Integration test echo", "inputSchema": { "type": "object", "properties": { "value": { "type": "string" } }, "required": ["value"] } },
+      { "name": "vscontrol_fixture_image", "displayName": "VS Control test image", "modelDescription": "Integration test image", "inputSchema": { "type": "object", "properties": {} } },
+      { "name": "vscontrol_fixture_error", "displayName": "VS Control test error", "modelDescription": "Integration test error", "inputSchema": { "type": "object", "properties": {} } }
+    ]
+  }
+}

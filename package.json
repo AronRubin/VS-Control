@@ -1,0 +1,21 @@
+{
+  "name": "vs-control",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Give Claude Code control of VS Code's browser, tests, and editor.",
+  "repository": { "type": "git", "url": "https://github.com/morzan1001/VS-Control.git" },
+  "homepage": "https://github.com/morzan1001/VS-Control#readme",
+  "bugs": { "url": "https://github.com/morzan1001/VS-Control/issues" },
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "build": "node scripts/build.cjs",
+    "test": "node scripts/build.cjs && node --test test/*.test.cjs",
+    "test:integration": "node scripts/test-vscode.cjs",
+    "package": "node scripts/build.cjs && python3 scripts/package.py",
+    "check": "node scripts/check.cjs",
+    "verify:package": "python3 scripts/verify-package.py",
+    "verify": "npm run check && npm test && npm run package && npm run verify:package",
+    "prepare:local": "node scripts/prepare-local.cjs"
+  },
+  "license": "MIT"
+}
