@@ -33,11 +33,13 @@ test('playwright results distinguish values, deferred executions and errors', ()
 test('injected page code is valid, self-contained JavaScript', () => {
   assert.doesNotThrow(() => new Function('page', `return (async () => { ${picker.PICK_CODE} })();`));
   assert.match(picker.PICK_CODE, new RegExp(`"expire":${picker.EXPIRE_MS}`));
+  assert.match(picker.PICK_CODE.split('\n')[0], /^\/\/ VS Control: Pick Element for Claude\./);
   assert.doesNotMatch(picker.PICK_CODE, /\bnative\b|\brequire\(/);
 });
 test('markdown fences survive backticks in page content and flag untrusted data', () => {
   const md = picker.toMarkdown({ ...ELEMENT, text: 'use ```code```', pickedAt: 'now' });
   assert.match(md, /untrusted data/);
+  assert.match(picker.toMarkdown({ ...ELEMENT, url: `data:text/html,${'x'.repeat(1000)}`, pickedAt: 'now' }), /- Page: App — data:text\/html,x{280,}…\n/);
   assert.match(md, /````text\nuse ```code```\n````/);
   assert.match(md, /```html\n<button id="save">Save<\/button>\n```/);
   assert.equal(picker.fileName({ tag: 'my-el' }, new Date(2026, 0, 1, 9, 5, 7)), 'my-el-090507.md');
