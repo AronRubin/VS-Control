@@ -8,6 +8,10 @@ const KEEP_PICKS = 20;
 const MAX_TEXT = 2000;
 const MAX_HTML = 20000;
 const ROUND_MS = 30000;
+// Each run_playwright_code call with code raises a VS Code confirmation when no
+// chat session is involved, so a pick runs code exactly once. The overlay
+// expires on its own instead of being cancelled by a second call.
+const EXPIRE_MS = 120000;
 
 // Runs inside the shared page through page.evaluate. Self-contained: it is
 // serialized, so it may not reference anything outside its own body.
@@ -55,7 +59,9 @@ function pickInPage(limits) {
     const click = event => { block(event); const el = target(event); finish(el ? serialize(el) : null); };
     const key = event => { if (event.key === 'Escape') { block(event); finish(null); } };
     const listeners = [['mousemove', move], ['mouseover', move], ['pointerdown', block], ['mousedown', block], ['pointerup', block], ['mouseup', block], ['click', click], ['keydown', key]];
+    const expiry = setTimeout(() => finish(null), limits.expire);
     function finish(value) {
+      clearTimeout(expiry);
       for (const [type, fn] of listeners) window.removeEventListener(type, fn, true);
       box.remove(); label.remove();
       if (window.__vsControlPicker === picker) delete window.__vsControlPicker;
@@ -67,10 +73,8 @@ function pickInPage(limits) {
     document.documentElement.append(box, label);
   });
 }
-function cancelInPage() { window.__vsControlPicker?.cancel(); return true; }
 
-const PICK_CODE = `return await page.evaluate(${pickInPage}, ${JSON.stringify({ text: MAX_TEXT, html: MAX_HTML })});`;
-const CANCEL_CODE = `return await page.evaluate(${cancelInPage});`;
+const PICK_CODE = `return await page.evaluate(${pickInPage}, ${JSON.stringify({ text: MAX_TEXT, html: MAX_HTML, expire: EXPIRE_MS })});`;
 
 // list_browser_pages lines look like "- [id] Title (url) (active)".
 function parsePages(text) {
@@ -201,11 +205,6 @@ function createPicker(vscode, { output } = {}) {
       output?.appendLine(`Pick failed: ${error.message}`);
       void vscode.window.showErrorMessage(`VS Control pick failed: ${error.message}`);
     } finally {
-      if (source.token.isCancellationRequested && page && mine === generation) {
-        const quiet = new vscode.CancellationTokenSource();
-        await invoke('run_playwright_code', { pageId: page.id, code: CANCEL_CODE, timeoutMs: 5000 }, quiet.token).catch(() => {});
-        quiet.dispose();
-      }
       if (pending === source) pending = undefined;
       source.dispose();
     }
@@ -213,4 +212,4 @@ function createPicker(vscode, { output } = {}) {
   return { pick, readiness, held: () => held };
 }
 
-module.exports = { createPicker, pickInPage, PICK_CODE, CANCEL_CODE, parsePages, choosePage, parseResult, fileName, toMarkdown, writePick, PICK_DIRECTORY };
+module.exports = { createPicker, pickInPage, PICK_CODE, EXPIRE_MS, parsePages, choosePage, parseResult, fileName, toMarkdown, writePick, PICK_DIRECTORY };

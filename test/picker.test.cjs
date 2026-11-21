@@ -31,7 +31,8 @@ test('playwright results distinguish values, deferred executions and errors', ()
   assert.match(picker.parseResult(r('Code execution failed: boom')).error, /boom/);
 });
 test('injected page code is valid, self-contained JavaScript', () => {
-  for (const code of [picker.PICK_CODE, picker.CANCEL_CODE]) assert.doesNotThrow(() => new Function('page', `return (async () => { ${code} })();`));
+  assert.doesNotThrow(() => new Function('page', `return (async () => { ${picker.PICK_CODE} })();`));
+  assert.match(picker.PICK_CODE, new RegExp(`"expire":${picker.EXPIRE_MS}`));
   assert.doesNotMatch(picker.PICK_CODE, /\bnative\b|\brequire\(/);
 });
 test('markdown fences survive backticks in page content and flag untrusted data', () => {
