@@ -50,7 +50,7 @@ test('language features map provider results to zero-based, capped JSON', async 
   const item = { name: 'greet', kind: 11, detail: '', uri: file, selectionRange: r(0, 9, 0, 14) };
   const executed = [];
   const replies = {
-    'vscode.executeHoverProvider': [{ contents: [{ value: '```ts\nfunction greet(): void\n```' }, 'plain'], range: r(0, 9, 0, 14) }],
+    'vscode.executeHoverProvider': [{ contents: [''], range: r(0, 9, 0, 14) }, { contents: [{ value: '```ts\nfunction greet(): void\n```' }, 'plain', ''], range: r(0, 9, 0, 14) }],
     'vscode.executeCodeActionProvider': [{ title: 'Add JSDoc', kind: { value: 'refactor' }, edit: { entries: () => [[file, [{ range: r(0, 0, 0, 0), newText: '/** */\n' }]]] } }, { title: 'Run', command: 'my.command' }],
     'vscode.prepareCallHierarchy': [item],
     'vscode.provideIncomingCalls': [{ from: { ...item, name: '(module)', kind: 1 }, fromRanges: [r(1, 0, 1, 5)] }],
