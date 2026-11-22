@@ -225,7 +225,7 @@ async function inspect(session, args) {
             return text(walk(await vscode.commands.executeCommand('vscode.executeDocumentSymbolProvider', uri)) || []);
           }
           const position = new vscode.Position(args.line || 0, args.column || 0);
-          if (kind === 'hover') return text((await run('vscode.executeHoverProvider', uri, position)).map(h => ({ contents: h.contents.map(c => clip(typeof c === 'string' ? c : c.value)), range: range(h.range) })));
+          if (kind === 'hover') return text((await run('vscode.executeHoverProvider', uri, position)).map(h => ({ contents: h.contents.map(c => clip(typeof c === 'string' ? c : c.value)).filter(Boolean), range: range(h.range) })).filter(h => h.contents.length));
           if (kind === 'codeActions') {
             const end = new vscode.Position(args.endLine ?? position.line, args.endColumn ?? position.character);
             const actions = await run('vscode.executeCodeActionProvider', uri, new vscode.Range(position, end), undefined, 50);
