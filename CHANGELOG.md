@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.0.4 — 2026-11-22 (AronRubin fork preview)
+
+- Flatten Prompt-TSX tool results to text, so the GitHub Copilot Chat tools return readable results (morzan1001/VS-Control#5).
+- Match the `notebook` and `code` groups to the current `copilot_*` tool IDs (morzan1001/VS-Control#6).
+- `vscode_debug`: set and remove breakpoints, and read the stack, variables and expressions of a paused session (morzan1001/VS-Control#7).
+- `vscode_symbols`: hover, code actions (listed, not applied), callers and callees, type definition, implementation and workspace symbols (morzan1001/VS-Control#8).
+
 ## 0.0.3 — 2026-11-22 (AronRubin fork preview)
 
 - Add **VS Control: Pick Element for Claude**: a hover overlay on the active shared browser page, a title-bar button and <kbd>Ctrl+Alt+C</kbd>. The pick is written to `.vs-control/picks/` and added to the Claude Code prompt through `claude-vscode.addToChat` when available.
