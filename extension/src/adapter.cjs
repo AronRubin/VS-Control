@@ -84,7 +84,8 @@ async function inspect(session, args) {
     if (args.frameId === undefined) throw new Error('Supply a frameId from action=stack, or a variablesReference.');
     const { scopes } = await session.customRequest('scopes', { frameId: args.frameId });
     const result = [];
-    for (const scope of scopes.slice(0, 10)) result.push({ name: scope.name, variablesReference: scope.variablesReference, expensive: !!scope.expensive, ...(scope.expensive ? {} : { variables: await variables(scope.variablesReference) }) });
+    // Always expand the innermost scope: js-debug marks an ES module's scope expensive.
+    for (const [index, scope] of scopes.slice(0, 10).entries()) result.push({ name: scope.name, variablesReference: scope.variablesReference, expensive: !!scope.expensive, ...(scope.expensive && index ? {} : { variables: await variables(scope.variablesReference) }) });
     return { ...about, scopes: result };
   }
   if (!args.expression) throw new Error('evaluate needs an expression.');

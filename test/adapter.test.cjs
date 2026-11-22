@@ -48,7 +48,7 @@ test('debug breakpoints and paused-session inspection use VS Code and DAP, zero-
   const replies = {
     threads: { threads: [{ id: 1, name: 'main' }] },
     stackTrace: { totalFrames: 1, stackFrames: [{ id: 7, name: 'run', source: { path: path.join(dir, 'app.js') }, line: 2, column: 3 }] },
-    scopes: { scopes: [{ name: 'Local', variablesReference: 11 }, { name: 'Global', variablesReference: 12, expensive: true }] },
+    scopes: { scopes: [{ name: 'Local', variablesReference: 11, expensive: true }, { name: 'Global', variablesReference: 12, expensive: true }] },
     variables: { variables: [{ name: 'total', value: '6', type: 'number', variablesReference: 0 }] },
     evaluate: { result: '12', type: 'number', variablesReference: 0 }
   };
@@ -71,7 +71,7 @@ test('debug breakpoints and paused-session inspection use VS Code and DAP, zero-
   const stack = await call({ action: 'stack' });
   assert.deepEqual(stack.threads[0].frames[0], { id: 7, name: 'run', path: path.join(dir, 'app.js'), line: 1, column: 2 });
   const scopes = (await call({ action: 'variables', frameId: 7 })).scopes;
-  assert.deepEqual(scopes.map(s => [s.name, s.expensive, s.variables?.[0].value]), [['Local', false, '6'], ['Global', true, undefined]]);
+  assert.deepEqual(scopes.map(s => [s.name, s.expensive, s.variables?.[0].value]), [['Local', true, '6'], ['Global', true, undefined]]);
   assert.equal((await call({ action: 'evaluate', expression: 'total * 2', frameId: 7 })).result, '12');
   assert.deepEqual(requests.at(-1), ['evaluate', { expression: 'total * 2', frameId: 7, context: 'repl' }]);
   await assert.rejects(adapter.call('vscode_debug', { action: 'variables' }, new AbortController().signal), /frameId/);
