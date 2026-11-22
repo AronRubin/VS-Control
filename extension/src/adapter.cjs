@@ -127,7 +127,7 @@ function createAdapter(vscode, subscriptions = [], { picker } = {}) {
             'Foreign test observers/results are not read through proposed APIs.',
             'Tasks and debug starts report dispatch/status, not proof of successful execution.',
             'vscode_picked_element only reads the last pick made by the user; it cannot start a pick.',
-            'Prompt-TSX results are returned as explicitly unsupported raw data, not silently flattened.',
+            'Prompt-TSX results are flattened to their text. A result holding non-text parts is returned as explicitly unsupported raw data.',
             'Native tool failures may be encoded in text; read the content before claiming success.'
           ]
         });
